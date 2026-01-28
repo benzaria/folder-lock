@@ -1,0 +1,10 @@
+
+__*
+\!*
+
+*test*
+*hidden*
+
+# media/*
+!media/lock.ico
+!media/vault.ico

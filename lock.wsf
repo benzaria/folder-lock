@@ -1,0 +1,8 @@
+<!-- Main Excutable -->
+
+<job id="FolderLock">
+    <script language="VBScript" src="helpers.vbs"/>
+    <script language="VBScript" src="icacls.vbs"/>
+    <script language="VBScript" src="args.vbs"/>
+    <script language="VBScript" src="main.vbs"/>
+</job>
