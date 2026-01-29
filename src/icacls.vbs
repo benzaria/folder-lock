@@ -1,27 +1,31 @@
-' ============== ACACLS ACTIONS ==============
+' ============== ICACLS ACTIONS ==============
 
+Dim command
+
+' Lock multiple folders
 Sub LockFolders(paths, user)
-    Dim command
     For Each path In paths
-        command = "icacls " & path & " /deny """ & user & ":(F)"""
-        shell.Run command, 0, False
+        LockFolder path, user
     Next
 End Sub
 
+' Unlock multiple folders
 Sub UnlockFolders(paths)
-    Dim command
     For Each path In paths
-        command = "icacls " & path & " /reset"
-        shell.Run command, 0, False
+        UnlockFolder path
     Next
 End Sub
 
+' Lock a single folder by denying full access to a specific user
 Sub LockFolder(path, user)
-    Dim paths(0) : paths(0) = path
-    LockFolders paths, user
+    ' Build ICACLS command to deny full access (F) for the given user
+    command = "icacls " & path & " /deny """ & user & ":(F)"""
+    shell.Run command, 0, False
 End Sub
 
+' Unlock a single folder by resetting their permissions to default
 Sub UnlockFolder(path)
-    Dim paths(0) : paths(0) = path
-    UnlockFolders paths
+    ' Reset all ACLs on the folder
+    command = "icacls " & path & " /reset"
+    shell.Run command, 0, False
 End Sub
