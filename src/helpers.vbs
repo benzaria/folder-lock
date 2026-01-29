@@ -15,11 +15,11 @@ Function CleanPath(path)
 End Function
 
 ' Checks if a user has "no access" (denied) to a folder using icacls
-Function GetAccess(path, user)
+Function GetAccess(path)
     Dim command, hasN
     
     ' Build the command to check ACLs and filter for (N) = deny
-    command = "cmd /c icacls """ & path & """ | findstr /i /c:""" & user & """ /c:Eveyone | findstr /i ""(N)"""
+    command = "cmd /c icacls """ & path & """ | findstr /i /c:""" & user & """ /c:Everyone | findstr /i ""(N)"""
     hasN = shell.Run(command, 0, True)
 
     ' 0 = no access
@@ -143,13 +143,7 @@ Sub SaveIni(path, pass)
         content = BuildIni(pass, True)
     End If
 
-    ' Ensure Desktop.ini is writable and hidden/system
-    shell.Run "cmd /c attrib -s -h """ & iniPath & """", 0, True
-    Set ini = fso.OpenTextFile(iniPath, 2, True)
-    ini.Write content : ini.Close
-    shell.Run "cmd /c attrib +s +h """ & iniPath & """", 0, True
-    
-    MsgPop "Password saved", vbInformation, "Set Folder Password"
+    BypassPerm path, iniPath, content
 End Sub
 
 ' Builds the content for Desktop.ini including optional icon path

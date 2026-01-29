@@ -1,4 +1,4 @@
-' ================= CONFIG =================
+' ================== INIT ==================
 
 Option Explicit
 On Error Goto 0
@@ -12,12 +12,14 @@ Set fso = CreateObject("Scripting.FileSystemObject")
 admin = shell.ExpandEnvironmentStrings("%ADMINPASSWORD%")
 user = shell.ExpandEnvironmentStrings("%USERDOMAIN%\%USERNAME%")
 
+ParseArgs(WScript.Arguments)
+
 ' ================== MAIN ==================
 
 ' Check if only one folder was provided
 If UBound(folders) = 0 Then
     Dim folder : folder = folders(0)
-    Dim isLocked : isLocked = GetAccess(folder, user) ' Check if folder is currently locked
+    Dim isLocked : isLocked = GetAccess(folder) ' Check if folder is currently locked
 
     ' ---------- Folder is currently locked ----------
     If isLocked Then
@@ -41,7 +43,7 @@ If UBound(folders) = 0 Then
                 MsgPop "Folder unlocked.", vbInformation, "Access Granted"
             Else
                 ' Wrong password → ensure folder stays locked
-                LockFolder folder, user
+                LockFolder folder
                 MsgPop "Incorrect password!" & vbCrLf & "Folder remain locked.", vbCritical, "Access Denied"
             End If
         End If
@@ -61,7 +63,7 @@ If UBound(folders) = 0 Then
             ' Ensure a password is set
             GetPassword folder
             ' Lock the folder
-            LockFolder folder, user
+            LockFolder folder
             MsgPop "Folder locked.", vbInformation, "Access Revoked"
         End If
     End If
@@ -69,11 +71,11 @@ If UBound(folders) = 0 Then
 ' ---------- Multiple folders ----------
 Else
     ' If folder is unlocked and no unlock requested → we will lock
-    If Not (GetAccess(folders(0), user) Or unlock) Then lock = True
+    If Not (GetAccess(folders(0)) Or unlock) Then lock = True
 
     ' ---------- Lock all folders ----------
     If lock Then
-        LockFolders folders, user
+        LockFolders folders
         MsgPop "Folders locked.", vbInformation, "Access Revoked"
     ' ---------- Unlock all folders ----------
     Else
@@ -86,7 +88,7 @@ Else
             MsgPop "Folders unlocked.", vbInformation, "Access Granted"
         Else
             ' Wrong password → keep all folders locked
-            LockFolders folders, user
+            LockFolders folders
             MsgPop "Incorrect password!" & vbCrLf & "Folders remain locked.", vbCritical, "Access Denied"
         End If
     End If
